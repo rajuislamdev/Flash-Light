@@ -8,8 +8,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: FlashlightControllScreen(),
+    return MaterialApp(
+      theme: ThemeData.dark(),
+      home: const FlashlightControllScreen(),
     );
   }
 }
@@ -28,7 +29,7 @@ class _FlashlightControllScreenState extends State<FlashlightControllScreen> {
   static const eventChannel =
       EventChannel('com.example.flashlight_app/flashlight_event');
 
-  bool isFlashlightOn = true;
+  bool isFlashlightOn = false;
 
   @override
   void initState() {
@@ -62,13 +63,46 @@ class _FlashlightControllScreenState extends State<FlashlightControllScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Flashlight Control'),
-      ),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: _toggleFlashlight,
-          child: Text(isFlashlightOn ? 'Turn Off' : 'Turn On'),
+        appBar: AppBar(
+          centerTitle: true,
+          title: const Text('Flashlight Control'),
+        ),
+        body: Center(
+          child: Column(
+            children: [
+              const SizedBox(height: 100),
+              Icon(
+                isFlashlightOn ? Icons.flashlight_off : Icons.flashlight_on,
+                size: 350,
+                color: !isFlashlightOn ? Colors.white : Colors.amber,
+              ),
+              const SizedBox(height: 100),
+              _buildFlashlightButton()
+            ],
+          ),
+        ));
+  }
+
+  Widget _buildFlashlightButton() {
+    return InkWell(
+      onTap: _toggleFlashlight,
+      borderRadius: BorderRadius.circular(100),
+      child: Container(
+        height: 100,
+        width: 100,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(
+              width: 5,
+              color: isFlashlightOn
+                  ? Colors.amber
+                  : Colors.white.withOpacity(0.2)),
+        ),
+        child: Center(
+          child: Text(
+            isFlashlightOn ? 'Off' : 'On',
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+          ),
         ),
       ),
     );
