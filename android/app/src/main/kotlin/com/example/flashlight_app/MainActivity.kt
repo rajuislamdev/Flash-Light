@@ -10,16 +10,26 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
 
+
+/**
+ * The main activity of the app.
+ *
+ * It handles the configuration of the Flutter engine and the communication with the camera.
+ */
 class MainActivity: FlutterActivity(){
+    // The channel names for MethodChannel and EventChannel
     private val channel = "com.example.flashlight_app/flashlight"
     private val eventChannel = "com.example.flashlight_app/flashlight_event"
+    // The state of the flashlight
     private var isFlashOn = false
+    // The event sink for EventChannel
     private var eventSink: EventChannel.EventSink? = null
 
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        // Set the method call handler for MethodChannel
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger,channel).setMethodCallHandler{
             call, result ->
             if(call.method == "toggleFlashlight"){
@@ -28,6 +38,7 @@ class MainActivity: FlutterActivity(){
             }
          }
 
+        // Set the stream handler for EventChannel
         EventChannel(flutterEngine.dartExecutor.binaryMessenger,eventChannel).setStreamHandler(
             object : EventChannel.StreamHandler{
                 override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
@@ -40,6 +51,7 @@ class MainActivity: FlutterActivity(){
             }
         )
         
+        // Register the torch callback for the camera
         val cameraManager = getSystemService(Context.CAMERA_SERVICE) as CameraManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             cameraManager.registerTorchCallback(object : CameraManager.TorchCallback(){
@@ -59,6 +71,7 @@ class MainActivity: FlutterActivity(){
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun toggleFlashlight(){
+        // Get the camera manager and toggle the flashlight state
         val cameraManager = getSystemService(Context.CAMERA_SERVICE) as CameraManager
         return try {
             val cameraId = cameraManager.cameraIdList[0]
